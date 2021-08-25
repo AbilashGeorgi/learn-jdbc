@@ -2,6 +2,7 @@ package com.learn.jdbc;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 
 public class JDBCExecutor {
 
@@ -31,6 +32,12 @@ public class JDBCExecutor {
 			dbCustomer = customerDAO.update(dbCustomer);
 			System.out.println(dbCustomer);
 			customerDAO.delete(dbCustomer.getId());
+			
+			OrderDAO orderDAO = new OrderDAO(connection);
+			Order order = orderDAO.findById(1000);
+			List<Order> orders = orderDAO.getOrdersForCustomer(789);
+			orders.forEach(System.out::println);
+			System.out.println(order);
         }catch(SQLException e){
             e.printStackTrace();
         }

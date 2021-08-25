@@ -16,7 +16,8 @@ public class Order implements DataTransferObject{
 	private BigDecimal totalDue;
 	private String status;
 	private String salespersonFirstName;
-	private String salespersonSecondName;
+	private String salespersonLastName;
+	private String salespersonEmail;
 	private List<OrderItem> orderItems;
 	
 	@Override
@@ -68,11 +69,17 @@ public class Order implements DataTransferObject{
 	public void setSalespersonFirstName(String salespersonFirstName) {
 		this.salespersonFirstName = salespersonFirstName;
 	}
-	public String getSalespersonSecondName() {
-		return salespersonSecondName;
+	public String getSalespersonLastName() {
+		return salespersonLastName;
 	}
-	public void setSalespersonSecondName(String salespersonSecondName) {
-		this.salespersonSecondName = salespersonSecondName;
+	public void setSalespersonLastName(String salespersonLastName) {
+		this.salespersonLastName = salespersonLastName;
+	}
+	public String getSalespersonEmail() {
+		return salespersonEmail;
+	}
+	public void setSalespersonEmail(String salespersonEmail) {
+		this.salespersonEmail = salespersonEmail;
 	}
 	public List<OrderItem> getOrderItems() {
 		return orderItems;
@@ -83,8 +90,9 @@ public class Order implements DataTransferObject{
 	
 	@Override
 	public String toString() {
-		return "Order [id=" + id + ", customerFirstName=" + customerFirstName + ", creationDate=" + creationDate
-				+ ", totalDue=" + totalDue + ", status=" + status + ", salespersonFirstName=" + salespersonFirstName
-				+ "]";
+		return "Order [id=" + id + ", customerFirstName=" + customerFirstName + ", customerLastName=" + customerLastName
+				+ ", customerEmail=" + customerEmail + ", creationDate=" + creationDate + ", totalDue=" + totalDue
+				+ ", status=" + status + ", salespersonFirstName=" + salespersonFirstName + ", salespersonLastName="
+				+ salespersonLastName + ", salespersonEmail=" + salespersonEmail + ", orderItems=" + orderItems + "]";
 	}
 }
