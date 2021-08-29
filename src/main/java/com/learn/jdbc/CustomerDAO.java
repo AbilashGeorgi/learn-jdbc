@@ -28,6 +28,9 @@ public class CustomerDAO extends DataAccessObject<Customer>{
 	
 	private static final String GET_ALL_LIMIT = "SELECT customer_id, first_name, last_name, email, phone, "
 			+ "address, city, state, zipcode FROM customer ORDER BY last_name, first_name LIMIT ? ";
+	
+	private static final String GET_ALL_PAGED = "SELECT customer_id, first_name, last_name, email, phone, "
+			+ "address, city, state, zipcode FROM customer ORDER BY last_name, first_name LIMIT ? OFFSET ? ";
 			
 	public CustomerDAO(Connection connection) {
 		super(connection);
@@ -81,6 +84,36 @@ public class CustomerDAO extends DataAccessObject<Customer>{
 		}
 		return customers;
 	}
+	
+	public List<Customer> findAllPaged(int limit, int pageNumber) {
+		List<Customer> customers = new ArrayList<>();
+		int offset = ((pageNumber - 1) * limit);
+		try(PreparedStatement statement = this.connection.prepareStatement((GET_ALL_PAGED));) {
+			if (limit < 1) {
+				limit = 10;
+			}
+			statement.setLong(1, limit);
+			statement.setLong(2, offset);
+			ResultSet rs = statement.executeQuery();
+			while (rs.next()) {
+				Customer customer = new Customer();
+				customers.add(customer);
+				customer.setId(rs.getLong("customer_id"));
+				customer.setFirstName(rs.getString("first_name"));
+				customer.setLastName(rs.getString("last_name"));
+				customer.setEmail(rs.getString("email"));
+				customer.setPhone(rs.getString("phone"));
+				customer.setAddress(rs.getString("address"));
+				customer.setCity(rs.getString("city"));
+				customer.setState(rs.getString("state"));
+				customer.setZipCode(rs.getString("zipcode"));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
+		return customers;
+	}
 
 	@Override
 	public List<Customer> findAll() {
@@ -91,6 +124,12 @@ public class CustomerDAO extends DataAccessObject<Customer>{
 	@Override
 	public Customer update(Customer dto) {
 		Customer customer = null;
+		try {
+			this.connection.setAutoCommit(false);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
 		try(PreparedStatement statement = this.connection.prepareStatement((UPDATE));){
 			statement.setString(1, dto.getFirstName());
 			statement.setString(2, dto.getLastName());
@@ -102,8 +141,15 @@ public class CustomerDAO extends DataAccessObject<Customer>{
 			statement.setString(8, dto.getZipCode());
 			statement.setLong(9, dto.getId());
 			statement.execute();
+			this.connection.commit();
 			customer = this.findById(dto.getId());
 		} catch (SQLException e) {
+			try {
+				this.connection.rollback();
+			}  catch (SQLException sqle) {
+				sqle.printStackTrace();
+				throw new RuntimeException();
+			}
 			e.printStackTrace();
 			throw new RuntimeException(e);
 		}

@@ -13,7 +13,9 @@ public class JDBCExecutor {
             Connection connection = dcm.getConnection();
             
             CustomerDAO customerDAO = new CustomerDAO(connection);
-            customerDAO.findAllSorted(20).forEach(System.out::println);
+            customerDAO.findAllPaged(20, 1).forEach(System.out::println);
+            System.out.println("*****************");
+            customerDAO.findAllPaged(20, 2).forEach(System.out::println);
         }catch(SQLException e){
             e.printStackTrace();
         }
